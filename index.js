@@ -10,6 +10,7 @@ const chats = {};
 
 const startGame = async (chatId) => {
     const randomNumber = Math.floor(Math.random() * 10);
+    console.log('@@@@ randomNumber', randomNumber)
     chats[chatId] = randomNumber;
 
     await bot.sendMessage(chatId, `Отгадай цифру от 0 до 10.`, gameOptions);
@@ -56,7 +57,7 @@ const start = () => {
             return startGame(chatId);
         }
 
-        if (data === chats[chatId]) {
+        if (data == chats[chatId]) {
             return await bot.sendMessage(chatId, `Да. Число ${chats[chatId]}`, againOptions);
         } else {
             return await bot.sendMessage(chatId, `Нет. Число: ${chats[chatId]}`, againOptions);
