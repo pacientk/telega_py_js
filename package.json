@@ -1,20 +1,24 @@
 {
-  "dependencies": {
-    "@rsksmart/rns": "^1.9.0",
-    "@types/node-telegram-bot-api": "^0.61.6",
-    "dotenv": "^16.0.3",
-    "node-telegram-bot-api": "^0.61.0",
-    "nodemon": "^2.0.22",
-    "pg": "^8.10.0",
-    "pg-hstore": "^2.3.4",
-    "sequelize": "^6.31.0",
-    "web3": "^1.9.0"
-  },
   "name": "telega_py_js",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "git@github.com:pacientk/telega_py_js.git",
-  "author": "KirTer <kirill.ter@gmail.com>",
+  "author": "KirTer <kirill.ter@gmail.com> kirillter.com",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "nodemon": "^2.0.22",
+    "node-telegram-bot-api": "^0.61.0",
+    "@types/node-telegram-bot-api": "^0.61.6",
+    "dotenv": "^16.0.3",
+    "@rsksmart/rns": "^1.9.0",
+    "pg": "^8.10.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.31.0",
+    "web3": "^1.9.0"
+  }
 }
