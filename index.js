@@ -11,6 +11,7 @@ const chats = {};
 const startGame = async (chatId) => {
     const randomNumber = Math.floor(Math.random() * 10);
     console.log('@@@@ randomNumber', randomNumber)
+    
     chats[chatId] = randomNumber;
 
     await bot.sendMessage(chatId, `Отгадай цифру от 0 до 10.`, gameOptions);
