@@ -1,6 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const child_process = require('child_process');
-const {gameOptions, againOptions} = require('./options')
+const sequelize = require('./db');
+const { gameOptions, againOptions } = require('./options');
 const moment = require('moment');
 require('dotenv').config();
 
@@ -10,14 +11,21 @@ const chats = {};
 
 const startGame = async (chatId) => {
     const randomNumber = Math.floor(Math.random() * 10);
-    console.log('@@@@ randomNumber', randomNumber)
-    
+    console.log('@@@@ randomNumber', randomNumber);
+
     chats[chatId] = randomNumber;
 
     await bot.sendMessage(chatId, `Отгадай цифру от 0 до 10.`, gameOptions);
 };
 
-const start = () => {
+const start = async () => {
+    try {
+        await sequelize.authenticate();
+        await sequelize.sync();
+    } catch (e) {
+        console.log('@@@@ ERRRO', e.message);
+    }
+
     bot.setMyCommands([
         { command: '/start', description: 'Start Command' },
         { command: '/info', description: 'Info Command' },
