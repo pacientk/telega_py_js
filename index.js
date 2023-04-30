@@ -14,6 +14,7 @@ const start = async () => {
         console.log('@@@@ Connection to DB...')
         await sequelize.authenticate();
         await sequelize.sync();
+        console.log('@@@@ Connected??')
     } catch (e) {
         console.log('@@@@ ERROR', e.message);
     }
