@@ -1,12 +1,15 @@
 const { Sequelize } = require('sequelize');
 
 module.exports = new Sequelize(
-    'defaultdb',
-    'vultradmin',
-    'AVNS_hoYOXZ-W17HZLMZJNfc',
+    // 'defaultdb',
+    // 'vultradmin',
+    // 'AVNS_hoYOXZ-W17HZLMZJNfc',
+    'telega_py_bd',
+    'rootuser',
+    '!Police15',
     {
         dialect: 'postgres',
-        host: 'vultr-prod-b501a4bc-fed7-49c1-9fd6-0fdc91b0af51-vultr-prod-2b1d.vultrdb.com',
+        host: '45.76.8.223',
         port: '16751',
     },
 );

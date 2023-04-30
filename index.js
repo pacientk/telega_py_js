@@ -11,7 +11,7 @@ const chats = {};
 
 const start = async () => {
     try {
-        console.log('@@@@ Connct to DB...')
+        console.log('@@@@ Connection to DB...')
         await sequelize.authenticate();
         await sequelize.sync();
     } catch (e) {
