@@ -4,12 +4,12 @@ module.exports = new Sequelize(
     // 'defaultdb',
     // 'vultradmin',
     // 'AVNS_hoYOXZ-W17HZLMZJNfc',
-    'telega_py_bd',
-    'rootuser',
-    '!Police15',
+    'defaultdb',
+    'vultradmin',
+    'AVNS_MGFdd5I4dKgYKdItZRI',
     {
         dialect: 'postgres',
-        host: '45.76.8.223',
-        port: '5432',
+        host: 'vultr-prod-15677b28-3396-40dc-a808-166d996fe86e-vultr-prod-2b1d.vultrdb.com',
+        port: '16751',
     },
 );
