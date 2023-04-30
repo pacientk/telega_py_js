@@ -9,21 +9,13 @@ const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
 
 const chats = {};
 
-const startGame = async (chatId) => {
-    const randomNumber = Math.floor(Math.random() * 10);
-    console.log('@@@@ randomNumber', randomNumber);
-
-    chats[chatId] = randomNumber;
-
-    await bot.sendMessage(chatId, `Отгадай цифру от 0 до 10.`, gameOptions);
-};
-
 const start = async () => {
     try {
+        console.log('@@@@ Connct to DB...')
         await sequelize.authenticate();
         await sequelize.sync();
     } catch (e) {
-        console.log('@@@@ ERRRO', e.message);
+        console.log('@@@@ ERROR', e.message);
     }
 
     bot.setMyCommands([
@@ -91,6 +83,16 @@ const start = async () => {
     });
 
 };
+
+const startGame = async (chatId) => {
+    const randomNumber = Math.floor(Math.random() * 10);
+    console.log('@@@@ randomNumber', randomNumber);
+
+    chats[chatId] = randomNumber;
+
+    await bot.sendMessage(chatId, `Отгадай цифру от 0 до 10.`, gameOptions);
+};
+
 
 start();
 
