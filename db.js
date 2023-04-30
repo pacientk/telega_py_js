@@ -1,9 +1,6 @@
 const { Sequelize } = require('sequelize');
 
 module.exports = new Sequelize(
-    // 'defaultdb',
-    // 'vultradmin',
-    // 'AVNS_hoYOXZ-W17HZLMZJNfc',
     'defaultdb',
     'vultradmin',
     'AVNS_MGFdd5I4dKgYKdItZRI',
