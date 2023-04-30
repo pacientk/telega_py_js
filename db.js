@@ -10,6 +10,6 @@ module.exports = new Sequelize(
     {
         dialect: 'postgres',
         host: '45.76.8.223',
-        port: '16751',
+        port: '5432',
     },
 );
