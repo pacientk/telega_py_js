@@ -1,7 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
 const child_process = require('child_process');
-// const sequelize = require('./src/db');
+const sequelize = require('./src/db');
 const { gameOptions, againOptions } = require('./src/options');
 const moment = require('moment');
 
@@ -10,15 +10,15 @@ const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
 const chats = {};
 
 const start = async () => {
-   // try {
-   //    console.log('@@@@ Connection to DB...');
-   //    console.log('@@@@ Connection to DB...', sequelize);
-   //    await sequelize.authenticate();
-   //    await sequelize.sync();
-   //    console.log('@@@@ Connected??');
-   // } catch (e) {
-   //    console.log('@@@@ ERROR', e.message);
-   // }
+   try {
+      console.log('@@@@ Connection to DB...');
+      console.log('@@@@ Connection to DB...', sequelize);
+      await sequelize.authenticate();
+      await sequelize.sync();
+      console.log('@@@@ Connected??');
+   } catch (e) {
+      console.log('@@@@ ERROR', e.message);
+   }
 
    bot.setMyCommands([
       { command: '/start', description: 'Start Command' },
