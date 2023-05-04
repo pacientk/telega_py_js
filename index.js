@@ -11,11 +11,10 @@ const chats = {};
 
 const start = async () => {
    try {
-      console.log('@@@@ Connection to DB...');
       console.log('@@@@ Connection to DB...', sequelize);
       await sequelize.authenticate();
       await sequelize.sync();
-      console.log('@@@@ Connected??');
+      console.log('@@@@ Connected.');
    } catch (e) {
       console.log('@@@@ ERROR', e.message);
    }
