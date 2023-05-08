@@ -29,25 +29,34 @@ const start = async () => {
 
       try {
          if (text === '/start') {
-            const user = await UserModel.create({ chatId });
+            const isUser = await UserModel.findOne({ chatId });
+
+            console.log('@@@@ >>>>>>', isUser);
+
+            if (isUser !== null) {
+               await bot.sendMessage(chatId, 'Well come back!');
+            } else {
+               await UserModel.create({ chatId });
+
+               await bot.sendSticker(
+                  chatId,
+                  'https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/1.webp'
+               );
+
+               await bot.sendMessage(
+                  chatId,
+                  `Добрый день, ${msg.from.last_name} ${msg.from.first_name}!`
+               );
+            }
 
             const opts = {
-               reply_to_message_id: msg.message_id,
+               // reply_to_message_id: msg.message_id,
                reply_markup: JSON.stringify({
                   keyboard: [['Kiev'], ['Saratov']],
                }),
             };
 
-            await bot.sendSticker(
-               chatId,
-               'https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/1.webp'
-            );
-
-            return bot.sendMessage(
-               chatId,
-               `Добрый день, ${msg.from.last_name} ${msg.from.first_name}! \nУкажите город:`,
-               opts
-            );
+            return bot.sendMessage(chatId, `Укажите город:`, opts);
          }
 
          if (text === '/info') {
