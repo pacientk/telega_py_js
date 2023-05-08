@@ -1,22 +1,20 @@
-const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
-const child_process = require('child_process');
-const sequelize = require('./src/db');
+const TelegramBot = require('node-telegram-bot-api');
 const { gameOptions, againOptions } = require('./src/options');
-const moment = require('moment');
+const sequelize = require('./src/db');
+const UserModel = require('./src/models');
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
-
 const chats = {};
 
 const start = async () => {
    try {
-      console.log('@@@@ Connection to DB...', sequelize);
+      console.log('Connection..');
       await sequelize.authenticate();
       await sequelize.sync();
-      console.log('@@@@ Connected.');
-   } catch (e) {
-      console.log('@@@@ ERROR', e.message);
+      console.log('Connection has been established successfully.');
+   } catch (error) {
+      console.error('Unable to connect to the database:', error);
    }
 
    bot.setMyCommands([
@@ -25,67 +23,72 @@ const start = async () => {
       { command: '/game', description: 'Play a game!' },
    ]);
 
-   bot.onText(/\/start/, async msg => {
-      // console.log('@@@@ ', bot);
-
-      const opts = {
-         reply_to_message_id: msg.message_id,
-         reply_markup: JSON.stringify({
-            keyboard: [['Kiev'], ['Saratov']],
-         }),
-      };
-
+   bot.on('message', async msg => {
       const text = msg.text;
       const chatId = msg.chat.id;
-      // await bot.sendSticker(chatId, 'https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/1.webp');
-      return bot.sendMessage(
-         chatId,
-         `Добрый день, ${msg.from.last_name} ${msg.from.first_name}! \nУкажите город:`,
-         opts
-      );
-   });
 
-   bot.onText(/\/game/, async msg => {
-      const chatId = msg.chat.id;
-      await bot.sendMessage(chatId, `Добро пожаловать в игру!`);
-      return startGame(chatId);
+      try {
+         if (text === '/start') {
+            const user = await UserModel.create({ chatId });
+
+            const opts = {
+               reply_to_message_id: msg.message_id,
+               reply_markup: JSON.stringify({
+                  keyboard: [['Kiev'], ['Saratov']],
+               }),
+            };
+
+            await bot.sendSticker(
+               chatId,
+               'https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/1.webp'
+            );
+
+            return bot.sendMessage(
+               chatId,
+               `Добрый день, ${msg.from.last_name} ${msg.from.first_name}! \nУкажите город:`,
+               opts
+            );
+         }
+
+         if (text === '/info') {
+            const user = await UserModel.findOne({ chatId });
+            return await bot.sendMessage(
+               chatId,
+               `Chat ID: ${chatId}.
+               Message text: ${msg.text}. 
+               Message from: ${msg.from.first_name} ${msg.from.last_name}. 
+               Right answers: ${user.right} 
+               Wrong answers: ${user.wrong}`
+            );
+         }
+
+         if (text === '/game') {
+            await bot.sendMessage(chatId, `Добро пожаловать в игру!`);
+            return startGame(chatId);
+         }
+      } catch (e) {
+         console.log('@@@@ ERR:::::', e);
+         bot.sendMessage(chatId, `ERROR: ${e.message}`);
+      }
    });
 
    bot.on('callback_query', async msg => {
       const data = msg.data;
       const chatId = msg.message.chat.id;
+      const user = await UserModel.findOne({ chatId });
 
       if (data === '/again') {
          return startGame(chatId);
       }
 
       if (data == chats[chatId]) {
-         return await bot.sendMessage(chatId, `Да. Число ${chats[chatId]}`, againOptions);
+         user.right += 1;
+         await bot.sendMessage(chatId, `Да. Число ${chats[chatId]}`, againOptions);
       } else {
-         return await bot.sendMessage(chatId, `Нет. Число: ${chats[chatId]}`, againOptions);
+         user.wrong += 1;
+         await bot.sendMessage(chatId, `Нет. Число: ${chats[chatId]}`, againOptions);
       }
-   });
-
-   bot.onText(/\/info/, async msg => {
-      const text = msg.text;
-      const chatId = msg.chat.id;
-      return await bot.sendMessage(
-         chatId,
-         `Chat ID: ${chatId}.\nMessage text: ${msg.text} \n${msg.entities}`
-      );
-   });
-
-   bot.on('message', async msg => {
-      const text = msg.text;
-      const chatId = msg.chat.id;
-
-      if (text === 'kir') {
-         return await bot.sendMessage(
-            chatId,
-            `Test msg: ${text} ${moment(msg.date).format('DD-MM-YYYY')}`
-         );
-      }
-      // return bot.sendMessage(chatId, 'What?');
+      await user.save();
    });
 };
 
@@ -99,20 +102,3 @@ const startGame = async chatId => {
 };
 
 start();
-
-// Matches /love
-// bot.onText(/\/love/, function onLoveText(msg) {
-//     console.log('@@@@ ', msg);
-//
-//     const opts = {
-//         reply_to_message_id: msg.message_id,
-//         reply_markup: JSON.stringify({
-//             keyboard: [
-//                 ['Yes, you are the bot of my life ❤'],
-//                 ['No, sorry there is another one...'],
-//             ],
-//         }),
-//     };
-//
-//     bot.sendMessage(msg.chat.id, 'Do you love me?' /*opts*/);
-// });
