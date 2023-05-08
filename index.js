@@ -31,8 +31,6 @@ const start = async () => {
          if (text === '/start') {
             const isUser = await UserModel.findOne({ chatId });
 
-            console.log('@@@@ >>>>>>', isUser);
-
             if (isUser !== null) {
                await bot.sendMessage(chatId, 'Well come back!');
             } else {
@@ -50,7 +48,7 @@ const start = async () => {
             }
 
             const opts = {
-               // reply_to_message_id: msg.message_id,
+               reply_to_message_id: msg.message_id,
                reply_markup: JSON.stringify({
                   keyboard: [['Kiev'], ['Saratov']],
                }),
