@@ -1,0 +1,29 @@
+FROM node:latest
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+FROM mysql:latest
+
+# Копируем наш скрипт в контейнер
+COPY init.sql /docker-entrypoint-initdb.d/
+
+# Эта команда создаст базу данных и таблицы, когда контейнер будет запущен
+# Мы можем использовать любое имя базы данных, например, mydb
+ENV MYSQL_DATABASE=telegapydb
+
+# Конфигурируем пользователя и пароль
+ENV MYSQL_USER=root
+ENV MYSQL_PASSWORD=AVNS_1RFAFSo_WUNuazdeR4E
+
+# Порт MySQL
+EXPOSE 3306
+
+CMD [ "npm", "start" ]

@@ -24,41 +24,47 @@ const start = async () => {
    ]);
 
    bot.on('message', async msg => {
+      // console.log('@@@@ >>>>', msg);
       const text = msg.text;
+      const userId = msg.from.id;
+      const firstName = msg.from.first_name;
+      const lastName = msg.from.last_name;
       const chatId = msg.chat.id;
 
       try {
          if (text === '/start') {
-            const isUser = await UserModel.findOne({ chatId });
+            const isUser = await UserModel.findOne({ where: { chatId } });
 
-            if (isUser !== null) {
-               await bot.sendMessage(chatId, 'Well come back!');
+            if (!!isUser) {
+               await bot.sendMessage(chatId, '<code>Welcome back!</code>', {
+                  parse_mode: 'HTML',
+               });
             } else {
-               await UserModel.create({ chatId });
-
+               await UserModel.create({ userId, chatId, firstName, lastName });
                await bot.sendSticker(
                   chatId,
                   'https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/1.webp'
                );
-
-               await bot.sendMessage(
-                  chatId,
-                  `Добрый день, ${msg.from.last_name} ${msg.from.first_name}!`
-               );
             }
 
+            await bot.sendMessage(
+               chatId,
+               `Добрый день, ${msg.from.last_name} ${msg.from.first_name}!`
+            );
+
             const opts = {
-               reply_to_message_id: msg.message_id,
-               reply_markup: JSON.stringify({
-                  keyboard: [['Kiev'], ['Saratov']],
-               }),
+               // reply_to_message_id: msg.message_id,
+               reply_markup: {
+                  inline_keyboard: [[{ text: 'Kievvv', web_app: { url: 'https://google.com' } }]],
+               },
             };
 
             return bot.sendMessage(chatId, `Укажите город:`, opts);
          }
 
          if (text === '/info') {
-            const user = await UserModel.findOne({ chatId });
+            const user = await UserModel.findOne({ userId });
+
             return await bot.sendMessage(
                chatId,
                `Chat ID: ${chatId}.

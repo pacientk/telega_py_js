@@ -1,0 +1,41 @@
+# используем образ с nodejs и mysql
+FROM node:latest
+
+# устанавливаем рабочую директорию приложения
+WORKDIR /app
+
+# копируем package.json и package-lock.json
+COPY package*.json ./
+
+# устанавливаем зависимости
+RUN npm install
+
+# копируем исходный код
+COPY . .
+
+# задаем переменную окружения для определения режима работы
+ENV NODE_ENV=dev
+
+# задаем порт, который будет использоваться
+EXPOSE 3000
+
+# задаем переменную окружения для токена Telegram
+ENV TELEGRAM_TOKEN="DDSSDDSSDDSD"
+
+# устанавливаем пакеты для работы с Mysql
+FROM mysql:latest
+
+# задаем переменные окружения для подключения к базе данных
+ENV MYSQL_HOST=localhost \
+    MYSQL_USER=root \
+    MYSQL_PASSWORD=secret \
+    MYSQL_DB=telega_py_db
+
+# создаем базу данных и таблицу при запуске контейнера
+ADD init.sql /docker-entrypoint-initdb.d
+
+# сохраняем данные базы данных на диске хоста
+VOLUME /var/lib/mysql
+
+# запускаем приложение
+CMD ["npm", "run", "${NODE_ENV}"]
