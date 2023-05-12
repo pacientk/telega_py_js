@@ -6,7 +6,7 @@ const { Sequelize } = require('sequelize');
 //    dialect: 'mysql',
 // });
 
-module.exports = new Sequelize('telega_py_db', 'root', 'qwqwQWQW', {
+module.exports = new Sequelize('telega_py_db', 'kir', 'qwqwQWQW', {
    host: 'mysql_server',
    dialect: 'mysql',
 });

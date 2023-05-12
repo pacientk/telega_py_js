@@ -12,11 +12,15 @@ COPY package*.json ./
 RUN npm install
 
 # Копирование исходного кода в контейнер
-COPY . .
+COPY . /app
 
 EXPOSE 3000
 
 VOLUME '/app/node_modules'
+
+#FROM mysql:latest
+ENV MYSQL_DATABASE=telega_py_db
+COPY ./init.sql /docker-entrypoint-initdb.d/
 
 # Запуск приложения
 CMD ["npm", "run", "dev"]

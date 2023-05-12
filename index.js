@@ -36,7 +36,7 @@ const start = async () => {
             const isUser = await UserModel.findOne({ where: { chatId } });
 
             if (!!isUser) {
-               await bot.sendMessage(chatId, '<code>Welcome back!</code>', {
+               await bot.sendMessage(chatId, '<b>Welcome back!</b>', {
                   parse_mode: 'HTML',
                });
             } else {
