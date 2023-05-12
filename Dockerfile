@@ -18,7 +18,7 @@ EXPOSE 3000
 
 VOLUME '/app/node_modules'
 
-#FROM mysql:latest
+# Установа БД и конфиг
 ENV MYSQL_DATABASE=telega_py_db
 COPY ./init.sql /docker-entrypoint-initdb.d/
 
