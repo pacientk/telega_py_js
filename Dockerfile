@@ -1,6 +1,6 @@
 
 # Базовый образ для Node.js
-FROM --platform=linux/arm64/v3 node:latest
+FROM node:latest
 
 # Установка рабочей директории внутри контейнера
 WORKDIR /app
