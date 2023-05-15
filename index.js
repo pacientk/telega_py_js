@@ -55,7 +55,9 @@ const start = async () => {
             const opts = {
                // reply_to_message_id: msg.message_id,
                reply_markup: {
-                  inline_keyboard: [[{ text: 'Kievvv', web_app: { url: 'https://google.com' } }]],
+                  inline_keyboard: [
+                     [{ text: 'Budapest!', web_app: { url: 'https://google.com' } }],
+                  ],
                },
             };
 
