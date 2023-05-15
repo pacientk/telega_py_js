@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: pacientus/telega_py_repo:second
+    image: pacientus/telega_py_repo:third
     ports:
       - "3000:3000"
     volumes:
