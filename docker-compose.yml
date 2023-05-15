@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     image: pacientus/telega_py_repo:third
+    environment:
+      - TELEGRAM_TOKEN=6001752286:AAHjw_f-goQybtD3H7ItYwg90UtsX2T3gIA
     ports:
       - "3000:3000"
     volumes:
@@ -17,7 +19,6 @@ services:
   mysql_server:
     image: mysql:latest
     environment:
-      - TELEGRAM_TOKEN=6001752286:AAHjw_f-goQybtD3H7ItYwg90UtsX2T3gIA
       - MYSQL_DATABASE=telega_py_db
       - MYSQL_USER=kir
       - MYSQL_PASSWORD=qwqwQWQW

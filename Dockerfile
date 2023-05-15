@@ -18,7 +18,6 @@ EXPOSE 3000
 
 VOLUME '/app/node_modules'
 
-ENV TELEGRAM_TOKEN=6001752286:AAHjw_f-goQybtD3H7ItYwg90UtsX2T3gIA
 # Установа БД и конфиг
 ENV MYSQL_DATABASE=telega_py_db
 COPY ./init.sql /docker-entrypoint-initdb.d/
