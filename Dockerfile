@@ -19,8 +19,8 @@ EXPOSE 3000
 VOLUME '/app/node_modules'
 
 # Установа БД и конфиг
-ENV MYSQL_DATABASE=telega_py_db
-COPY ./init.sql /docker-entrypoint-initdb.d/
+#ENV MYSQL_DATABASE=telega_py_db
+#COPY ./init.sql /docker-entrypoint-initdb.d/
 
 # Запуск приложения
 CMD ["npm", "run", "dev"]

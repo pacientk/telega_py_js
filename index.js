@@ -3,9 +3,23 @@ const TelegramBot = require('node-telegram-bot-api');
 const { gameOptions, againOptions } = require('./src/options');
 const sequelize = require('./src/db');
 const UserModel = require('./src/models');
+const constants = require('./src/constants.js');
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
 const chats = {};
+let currentStep = 0;
+
+const validateOrderNo = message => {
+   const regex = constants.REGEX_DIGITS_ONLY; // Регулярное выражение для проверки наличия только цифр
+
+   if (regex.test(message)) {
+      // Сообщение содержит только цифры
+      return true;
+   } else {
+      // Сообщение содержит другие символы
+      return false;
+   }
+};
 
 const start = async () => {
    try {
@@ -24,47 +38,75 @@ const start = async () => {
    ]);
 
    bot.on('message', async msg => {
-      // console.log('@@@@ >>>>', msg);
-      const text = msg.text;
+      const userInput = msg.text;
       const userId = msg.from.id;
       const firstName = msg.from.first_name;
       const lastName = msg.from.last_name;
       const chatId = msg.chat.id;
 
       try {
-         if (text === '/start') {
-            const isUser = await UserModel.findOne({ where: { chatId } });
+         if (userInput === '/start') {
+            console.log('@@@@ currentStep::', currentStep);
 
-            if (!!isUser) {
-               await bot.sendMessage(chatId, '<b>Welcome back!</b>', {
-                  parse_mode: 'HTML',
-               });
-            } else {
-               await UserModel.create({ userId, chatId, firstName, lastName });
-               await bot.sendSticker(
-                  chatId,
-                  'https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/1.webp'
-               );
+            if (currentStep === 0) {
+               const isUser = await UserModel.findOne({ where: { chatId } });
+
+               if (!!isUser) {
+                  await bot.sendMessage(
+                     chatId,
+                     `<b>Добрый день, ${msg.from.last_name} ${msg.from.first_name}!</b>`,
+                     {
+                        parse_mode: 'HTML',
+                     }
+                  );
+                  await bot.sendMessage(chatId, `Укажите номер заявки.`);
+                  // await bot.sendMessage(chatId, `<code>Укажите номер заявки.</code>`, {
+                  //    parse_mode: 'HTML',
+                  // });
+
+                  if (userInput && validateOrderNo(userInput)) {
+                     bot.sendMessage(chatId, 'Сообщение содержит только цифры. 👍');
+                     currentStep++;
+                  } else {
+                     await bot.sendMessage(chatId, `Некорретно. Введите только цифры.`);
+                  }
+                  // await validateOrderNo(text);
+
+                  // bot.onText(/^[0-9]+$/, msg => {
+                  //    const chatId = msg.chat.id;
+                  //    bot.sendMessage(chatId, 'Сообщение содержит только цифры. 👍');
+                  // });
+               } else {
+                  await UserModel.create({ userId, chatId, firstName, lastName });
+                  await bot.sendSticker(
+                     chatId,
+                     'https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/1.webp'
+                  );
+               }
+
+               currentStep++;
+            } else if (currentStep === 1) {
+               await bot.sendMessage(chatId, `Укажите сумму.`);
             }
 
-            await bot.sendMessage(
-               chatId,
-               `Добрый день, ${msg.from.last_name} ${msg.from.first_name}!`
-            );
+            bot.onText(constants.REGEX_DIGITS_ONLY, msg => {
+               const chatId = msg.chat.id;
+               bot.sendMessage(chatId, 'Сообщение содержит только цифры. 👍');
+            });
 
-            const opts = {
-               // reply_to_message_id: msg.message_id,
-               reply_markup: {
-                  inline_keyboard: [
-                     [{ text: 'Budapest!', web_app: { url: 'https://google.com' } }],
-                  ],
-               },
-            };
-
-            return bot.sendMessage(chatId, `Укажите город:`, opts);
+            // const opts = {
+            //    // reply_to_message_id: msg.message_id,
+            //    reply_markup: {
+            //       inline_keyboard: [
+            //          [{ text: 'Budapest!', web_app: { url: 'https://google.com' } }],
+            //       ],
+            //    },
+            // };
+            //
+            // return bot.sendMessage(chatId, `Укажите город:`, opts);
          }
 
-         if (text === '/info') {
+         if (userInput === '/info') {
             const user = await UserModel.findOne({ userId });
 
             return await bot.sendMessage(
@@ -77,7 +119,7 @@ const start = async () => {
             );
          }
 
-         if (text === '/game') {
+         if (userInput === '/game') {
             await bot.sendMessage(chatId, `Добро пожаловать в игру!`);
             return startGame(chatId);
          }

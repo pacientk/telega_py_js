@@ -15,6 +15,7 @@ yarn-error.log*
 .pnp.js
 jspm_packages/
 src/node_modules
+mysql
 
 # misc
 .DS_Store
