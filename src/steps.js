@@ -1,13 +1,18 @@
-const UserModel = require('../src/models');
+const UserModel = require('../src/Models/User');
+const RequestModel = require('../src/Models/Request');
+const constant = require('../src/constants');
 const sequelize = require('./db');
 
 let steps = {};
 
 steps.start = async function(bot, msg) {
-   console.log('@@@@ ', msg);
+   const userId = msg.from.id;
+   const chatId = msg.chat.id;
+   const firstName = msg.from.first_name;
+   const lastName = msg.from.last_name;
 
    try {
-      console.log('Connection..');
+      console.log(':::> Connection..');
       await sequelize.authenticate();
       await sequelize.sync();
       console.log(':::> Connection has been established successfully.');
@@ -15,39 +20,38 @@ steps.start = async function(bot, msg) {
       console.error('Unable to connect to the database:', error);
    }
 
-   const userId = msg.from.id;
-   const chatId = msg.chat.id;
-   const firstName = msg.from.first_name;
-   const lastName = msg.from.last_name;
+   bot.setMyCommands([
+      { command: '/start', description: 'Start Command!!' },
+      // { command: '/info', description: 'Info Command@@' },
+      // { command: '/game', description: 'Play a game!' },
+   ]);
 
-   bot.sendMessage(chatId, 'Шаг первый: Приветственное сообщение.');
+   await bot.sendMessage(chatId, 'Шаг первый: Приветственное сообщение.');
+   await bot.sendMessage(chatId, 'Шаг второй: Укажите номер заявки.');
 
    const isUser = await UserModel.findOne({ where: { chatId } });
 
    if (isUser) {
-      bot.sendMessage(chatId, 'New user');
-      steps.setCurrentStep(chatId, 1);
+      await steps.setCurrentStep(chatId, 1);
    } else {
-      await UserModel.create({ userId, chatId, firstName, lastName });
-      steps.setCurrentStep(chatId, 1);
+      await bot.sendMessage(chatId, 'New user');
+      await UserModel.create({ where: { userId, chatId, firstName, lastName } });
+      await steps.setCurrentStep(chatId, 1);
    }
 };
 
-steps.handleStep1 = function(bot, chatId, message) {
-   bot.sendMessage(chatId, 'Шаг второй: Укажите номер заявки.');
-
-   if (/^\d+$/.test(message)) {
-      steps.setCurrentStep(chatId, 2);
-      bot.sendMessage(chatId, 'Правильно указан номер заявки.');
+steps.handleStep1 = async function(bot, chatId, message) {
+   if (constant.REGEX_DIGITS_ONLY.test(message)) {
+      await steps.setCurrentStep(chatId, 2);
+      await bot.sendMessage(chatId, 'Номер заявки принят.');
+      await bot.sendMessage(chatId, 'Шаг третий: Введите сумму.');
    } else {
-      bot.sendMessage(chatId, 'Ошибка! Номер заявки должен состоять только из цифр.');
+      await bot.sendMessage(chatId, 'Ошибка! Номер заявки должен состоять только из цифр.');
    }
 };
 
-steps.handleStep2 = function(bot, chatId, message) {
-   bot.sendMessage(chatId, 'Шаг третий: Введите сумму.');
-
-   if (/^\d+$/.test(message)) {
+steps.handleStep2 = async function(bot, chatId, message) {
+   if (constant.REGEX_DIGITS_ONLY.test(message)) {
       steps.setCurrentStep(chatId, 3);
       bot.sendMessage(chatId, 'Правильно указана сумма.');
    } else {
@@ -55,11 +59,24 @@ steps.handleStep2 = function(bot, chatId, message) {
    }
 };
 
-steps.handleStep3 = function(bot, chatId, message) {
+steps.handleStep3 = async function(bot, msg) {
+   console.log('@@@@ ***********', msg);
+   const userId = msg.from.id;
+   const chatId = msg.chat.id;
+   const requestId = msg.text;
+
    const step2Data = steps.getStepData(chatId, 2);
 
-   bot.sendMessage(chatId, `Номер заявки: ${step2Data}`);
-   bot.sendMessage(chatId, `Сумма: ${message}`);
+   await bot.sendMessage(chatId, `Номер заявки: ${step2Data}`);
+   await bot.sendMessage(chatId, `Сумма: ${msg.text}`);
+
+   const isRequestExists = await RequestModel.findOne({ where: { requestId } });
+
+   if (isRequestExists) {
+      await bot.sendMessage(chatId, 'Такая заявка уже существует.');
+   } else {
+      await RequestModel.create({ where: { userId, chatId, requestId } });
+   }
 
    // Вы можете добавить свою логику обработки шага 4 здесь
 

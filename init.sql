@@ -11,3 +11,13 @@ CREATE TABLE IF NOT EXISTS Users (
     createdAt DATETIME,
     updatedAt DATETIME
 );
+CREATE TABLE IF NOT EXISTS Requests (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    userId INT,
+    chatId INT,
+    requestId INT,
+    sum INT,
+    total INT,
+    createdAt DATETIME,
+    updatedAt DATETIME
+);
