@@ -2,6 +2,7 @@ const UserModel = require('../src/Models/User');
 const RequestModel = require('../src/Models/Request');
 const constant = require('../src/constants');
 const sequelize = require('./db');
+const { againOptions } = require('./options');
 
 let steps = {};
 
@@ -26,8 +27,17 @@ steps.start = async function(bot, msg) {
       // { command: '/game', description: 'Play a game!' },
    ]);
 
-   await bot.sendMessage(chatId, 'Шаг первый: Приветственное сообщение.');
-   await bot.sendMessage(chatId, 'Шаг второй: Укажите номер заявки.');
+   await bot.sendMessage(
+      chatId,
+      'Здравствуйте!\n\nПриветственное сообщение.\n\nДля начал процесса нажмите на кнопку ниже.\n',
+      againOptions
+   );
+
+   // await bot.sendMessage(
+   //    chatId,
+   //    'Здравствуйте!\nПриветственное сообщение.\nДля начал процесса нажмите на кнопку ниже.'
+   // );
+   // await bot.sendMessage(chatId, 'Шаг второй: Укажите номер заявки.');
 
    const isUser = await UserModel.findOne({ where: { chatId } });
 
@@ -51,6 +61,7 @@ steps.handleStep1 = async function(bot, chatId, message) {
 };
 
 steps.handleStep2 = async function(bot, chatId, message) {
+   bot.sendMessage(chatId, 'step 2.');
    if (constant.REGEX_DIGITS_ONLY.test(message)) {
       steps.setCurrentStep(chatId, 3);
       bot.sendMessage(chatId, 'Правильно указана сумма.');

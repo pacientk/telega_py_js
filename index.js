@@ -6,7 +6,17 @@ const steps = require('./src/steps');
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
 
 bot.onText(/\/start/, msg => {
+   steps.setCurrentStep(msg.chat.id, 0);
    steps.start(bot, msg);
+});
+
+bot.on('callback_query', query => {
+   const chatId = query.message.chat.id;
+   const data = query.data;
+
+   if (data === 'begin') {
+      bot.sendMessage(chatId, 'beginbeginbeginbegin');
+   }
 });
 
 bot.on('message', msg => {
