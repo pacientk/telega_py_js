@@ -35,7 +35,7 @@ const start = async () => {
          if (text === '/start') {
             const isUser = await UserModel.findOne({ where: { chatId } });
 
-            if (!!isUser) {
+            if (isUser) {
                await bot.sendMessage(chatId, '<b>Welcome back!</b>', {
                   parse_mode: 'HTML',
                });
@@ -61,7 +61,7 @@ const start = async () => {
                },
             };
 
-            return bot.sendMessage(chatId, `Укажите город:`, opts);
+            return bot.sendMessage(chatId, 'Укажите город:', opts);
          }
 
          if (text === '/info') {
@@ -78,7 +78,7 @@ const start = async () => {
          }
 
          if (text === '/game') {
-            await bot.sendMessage(chatId, `Добро пожаловать в игру!`);
+            await bot.sendMessage(chatId, 'Добро пожаловать в игру!');
             return startGame(chatId);
          }
       } catch (e) {
@@ -113,7 +113,7 @@ const startGame = async chatId => {
 
    chats[chatId] = randomNumber;
 
-   await bot.sendMessage(chatId, `Отгадай цифру от 0 до 10.`, gameOptions);
+   await bot.sendMessage(chatId, 'Отгадай цифру от 0 до 10.', gameOptions);
 };
 
 start();

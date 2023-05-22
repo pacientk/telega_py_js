@@ -24,7 +24,7 @@ steps.start = async function(bot, msg) {
 
    const isUser = await UserModel.findOne({ where: { chatId } });
 
-   if (!!isUser) {
+   if (isUser) {
       bot.sendMessage(chatId, 'New user');
       steps.setCurrentStep(chatId, 1);
    } else {

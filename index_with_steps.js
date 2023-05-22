@@ -12,6 +12,7 @@ bot.onText(/\/start/, msg => {
 });
 
 bot.on('message', msg => {
+   const chatId = msg.chat.id;
    const step = steps.getCurrentStep(chatId);
 
    if (step === 1) {
