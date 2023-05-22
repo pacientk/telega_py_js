@@ -1,9 +1,19 @@
 const UserModel = require('../src/models');
+const sequelize = require('./db');
 
 let steps = {};
 
 steps.start = async function(bot, msg) {
    console.log('@@@@ ', msg);
+
+   try {
+      console.log('Connection..');
+      await sequelize.authenticate();
+      await sequelize.sync();
+      console.log(':::> Connection has been established successfully.');
+   } catch (error) {
+      console.error('Unable to connect to the database:', error);
+   }
 
    const userId = msg.from.id;
    const chatId = msg.chat.id;
