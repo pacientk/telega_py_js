@@ -37,7 +37,7 @@ bot.on('message', msg => {
    const step = steps.getCurrentStep(chatId);
 
    if (step === 1) {
-      steps.handleStep1(bot, chatId, msg.text);
+      steps.handleStep1(bot, msg);
    } else if (step === 2) {
       steps.handleStep2(bot, chatId, msg.text);
    } else if (step === 3) {

@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS Requests (
     chatId INT,
     requestId INT,
     sum INT,
+    coin VARCHAR(255),
+    network VARCHAR(255),
     total INT,
     createdAt DATETIME,
     updatedAt DATETIME
