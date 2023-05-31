@@ -22,9 +22,32 @@ module.exports = {
       }),
    },
 
-   againOptions: {
+   welcomeOptions: {
       reply_markup: JSON.stringify({
          inline_keyboard: [[{ text: 'Начать', callback_data: 'begin' }]],
+      }),
+   },
+
+   coinsOptions: {
+      reply_markup: JSON.stringify({
+         inline_keyboard: [[{ text: 'ETH', callback_data: 'ethereum' }]],
+      }),
+   },
+
+   networkOptions: {
+      reply_markup: JSON.stringify({
+         inline_keyboard: [
+            [
+               { text: 'ERC20', callback_data: 'erc20' },
+               { text: 'BEP20', callback_data: 'bep20' },
+            ],
+         ],
+      }),
+   },
+
+   createWallerOptions: {
+      reply_markup: JSON.stringify({
+         inline_keyboard: [[{ text: 'Создать', callback_data: 'createWallet' }]],
       }),
    },
 };

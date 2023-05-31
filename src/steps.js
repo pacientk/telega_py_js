@@ -2,7 +2,7 @@ const UserModel = require('../src/Models/User');
 const RequestModel = require('../src/Models/Request');
 const constant = require('../src/constants');
 const sequelize = require('./db');
-const { againOptions } = require('./options');
+const { welcomeOptions, coinsOptions } = require('./options');
 
 let steps = {};
 
@@ -30,7 +30,7 @@ steps.start = async function(bot, msg) {
    await bot.sendMessage(
       chatId,
       'Здравствуйте!\n\nПриветственное сообщение.\n\nДля начал процесса нажмите на кнопку ниже.\n',
-      againOptions
+      welcomeOptions
    );
 
    // await bot.sendMessage(
@@ -45,7 +45,12 @@ steps.start = async function(bot, msg) {
       await steps.setCurrentStep(chatId, 1);
    } else {
       await bot.sendMessage(chatId, 'New user');
-      await UserModel.create({ where: { userId, chatId, firstName, lastName } });
+      await UserModel.create({
+         userId,
+         chatId,
+         firstName,
+         lastName,
+      });
       await steps.setCurrentStep(chatId, 1);
    }
 };
@@ -65,6 +70,7 @@ steps.handleStep2 = async function(bot, chatId, message) {
    if (constant.REGEX_DIGITS_ONLY.test(message)) {
       steps.setCurrentStep(chatId, 3);
       bot.sendMessage(chatId, 'Правильно указана сумма.');
+      bot.sendMessage(chatId, 'Выберете монету для транзакции.\n\n', coinsOptions);
    } else {
       bot.sendMessage(chatId, 'Ошибка! Сумма должна состоять только из цифр.');
    }

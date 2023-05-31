@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: pacientus/telega_py_repo:third
     environment:
-      - TELEGRAM_TOKEN=6001752286:AAHjw_f-goQybtD3H7ItYwg90UtsX2T3gIA
+      - TELEGRAM_TOKEN=6001752286:AAFNKRFIDyAcOC_pfSb4CgXgbwn8We-hHWU
     ports:
       - "3000:3000"
     volumes:

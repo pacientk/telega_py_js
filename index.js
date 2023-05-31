@@ -1,5 +1,6 @@
 require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
+const { networkOptions, createWallerOptions } = require('./src/options');
 
 const steps = require('./src/steps');
 
@@ -15,7 +16,19 @@ bot.on('callback_query', query => {
    const data = query.data;
 
    if (data === 'begin') {
-      bot.sendMessage(chatId, 'beginbeginbeginbegin');
+      bot.sendMessage(chatId, 'Укажите номер заявки.');
+   }
+   if (data === 'ethereum') {
+      bot.sendMessage(chatId, 'Вы указали Ethereum');
+      bot.sendMessage(
+         chatId,
+         'Укажите сеть.\n\n *Очень важно указать правильную сеть, иначе средтва могут быть безвозвратно утеряны.',
+         networkOptions
+      );
+   }
+   if (data === 'erc20') {
+      bot.sendMessage(chatId, 'Вы указали ERC20');
+      bot.sendMessage(chatId, 'Получить ваш личный временный кошелек.', createWallerOptions);
    }
 });
 
