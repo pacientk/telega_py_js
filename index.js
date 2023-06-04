@@ -19,6 +19,7 @@ bot.on('callback_query', query => {
       bot.sendMessage(chatId, 'Укажите номер заявки.');
    }
    if (data === 'ethereum') {
+      // steps.setCurrentStep(chatId, 3);
       bot.sendMessage(chatId, 'Вы указали Ethereum');
       bot.sendMessage(
          chatId,
@@ -39,7 +40,7 @@ bot.on('message', msg => {
    if (step === 1) {
       steps.handleStep1(bot, msg);
    } else if (step === 2) {
-      steps.handleStep2(bot, chatId, msg.text);
+      steps.handleStep2(bot, msg);
    } else if (step === 3) {
       steps.handleStep3(bot, msg);
    }

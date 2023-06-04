@@ -13,9 +13,9 @@ CREATE TABLE IF NOT EXISTS Users (
 );
 CREATE TABLE IF NOT EXISTS Requests (
     id INT PRIMARY KEY AUTO_INCREMENT,
+    requestId INT,
     userId INT,
     chatId INT,
-    requestId INT,
     sum INT,
     coin VARCHAR(255),
     network VARCHAR(255),
