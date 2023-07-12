@@ -24,7 +24,6 @@ const start = async () => {
    ]);
 
    bot.on('message', async msg => {
-      // console.log('@@@@ >>>>', msg);
       const text = msg.text;
       const userId = msg.from.id;
       const firstName = msg.from.first_name;
@@ -109,7 +108,6 @@ const start = async () => {
 
 const startGame = async chatId => {
    const randomNumber = Math.floor(Math.random() * 10);
-   console.log('@@@@ randomNumber', randomNumber);
 
    chats[chatId] = randomNumber;
 

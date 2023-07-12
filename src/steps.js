@@ -14,12 +14,12 @@ steps.start = async function(bot, msg) {
    const lastName = msg.from.last_name;
 
    try {
-      console.log(':::> Connection..');
+      console.log('@@@ :::> Connection..');
       await sequelize.authenticate();
       await sequelize.sync();
-      console.log(':::> Connection has been established successfully.');
+      console.log('@@@ :::> Connection has been established successfully.');
    } catch (error) {
-      console.error('Unable to connect to the database:', error);
+      console.error('@@@ Unable to connect to the database:', error);
    }
 
    bot.setMyCommands([
@@ -50,62 +50,62 @@ steps.start = async function(bot, msg) {
    }
 };
 
-steps.handleStep1 = async function(bot, msg) {
+steps.userGetRequstId_askSum_step_1 = async function(bot, msg) {
    const userId = msg.from.id;
    const chatId = msg.chat.id;
    const requestId = msg.text;
 
-   console.log('@@@@ msg ::111::', msg);
+   console.log('@@@@ USERDATA userGetRequstId_askSum_step_1 ::::', userData);
 
    if (constant.REGEX_DIGITS_ONLY.test(requestId)) {
-      const dbUserId = await UserModel.findOne({ userId });
-      userData[dbUserId.dataValues.id] = { requestId, userId, chatId };
-
-      console.log('@@@@ 111 userData', userData);
-
       await steps.setCurrentStep(chatId, 2);
+
+      const dbUserId = await UserModel.findOne({ userId });
+      userData[dbUserId?.dataValues.id] = { requestId, userId, chatId };
+
       await bot.sendMessage(chatId, `Номер заявки <b>#${requestId}</b> принят.`, {
          parse_mode: 'HTML',
       });
-      await bot.sendMessage(chatId, 'Шаг третий: Введите сумму.');
+      await bot.sendMessage(chatId, 'Введите сумму.');
    } else {
       await bot.sendMessage(chatId, 'Ошибка! Номер заявки должен состоять только из цифр.');
    }
 };
 
-steps.handleStep2 = async function(bot, msg) {
+steps.userGetSum_askCoin_step_2 = async function(bot, msg) {
    const userId = msg.from.id;
    const chatId = msg.chat.id;
    const sum = msg.text;
 
-   console.log('@@@@ msg ::222::', msg);
-
    const user = await UserModel.findOne({ where: { userId } });
    userData[user.dataValues.id] = { ...userData[user.dataValues.id], sum };
 
-   console.log('@@@@ 222 userData', userData);
+   console.log('@@@@ USERDATA userGetSum_askCoin_step_2 ::::', userData);
 
    if (constant.REGEX_DIGITS_ONLY.test(sum)) {
       // userData[requestId] = { sum };
 
       steps.setCurrentStep(chatId, 3);
-      bot.sendMessage(chatId, `Сумма <b>${sum}</b> принята.`, { parse_mode: 'HTML' });
-      bot.sendMessage(chatId, 'Выберете монету для транзакции.\n\n', coinsOptions);
+      await bot.sendMessage(chatId, `Сумма <b>${sum}</b> принята.`, { parse_mode: 'HTML' });
+      await bot.sendMessage(chatId, 'Выберете монету для транзакции.\n\n', coinsOptions);
    } else {
-      bot.sendMessage(chatId, 'Ошибка! Сумма должна состоять только из цифр.');
+      await bot.sendMessage(chatId, 'Ошибка! Сумма должна состоять только из цифр.');
    }
 };
 
 steps.handleStep3 = async function(bot, msg) {
-   console.log('@@@@ msg ::333::', msg);
-
    const userId = msg.from.id;
    const chatId = msg.chat.id;
    const requestId = msg.text;
 
+   // const user = await UserModel.findOne({ where: { userId } });
+   // userData[user.dataValues.id] = { ...userData[user.dataValues.id], sum };
+   //
+   // console.log('@@@@ USERDATA handleStep3 ::::', userData);
+
    const step2Data = steps.getStepData(chatId, 2);
 
-   await bot.sendMessage(chatId, `Номер заявки: ${step2Data}`);
+   await bot.sendMessage(chatId, `Номер заявки step2Data: ${step2Data}`);
    await bot.sendMessage(chatId, `Сумма: ${msg.text}`);
 
    const isRequestExists = await RequestModel.findOne({ where: { requestId } });
@@ -117,7 +117,53 @@ steps.handleStep3 = async function(bot, msg) {
    }
 
    // Завершаем пошаговый Flow
-   steps.setCurrentStep(chatId, 0);
+   // steps.setCurrentStep(chatId, 0);
+};
+
+steps.getWallet = async function(bot, msg) {
+   // const userId = msg.from.id;
+   const chatId = msg.chat.id;
+   // const requestId = msg.text;
+
+   console.log('@@@@ USERDATA ::::', userData);
+
+   // const step2Data = steps.getStepData(chatId, 2);
+
+   await bot.sendMessage(chatId, 'КОШЕЛЕК!!!');
+
+   // const isRequestExists = await RequestModel.findOne({ where: { requestId } });
+   //
+   // if (isRequestExists) {
+   //    await bot.sendMessage(chatId, 'Такая заявка уже существует.');
+   // } else {
+   //    await RequestModel.create({ where: { userId, chatId, requestId } });
+   // }
+
+   // Завершаем пошаговый Flow
+   // steps.setCurrentStep(chatId, 0);
+};
+
+steps.getTransactionUserData = async function(bot, msg) {
+   // const userId = msg.from.id;
+   const chatId = msg.chat.id;
+   // const requestId = msg.text;
+
+   // const step2Data = steps.getStepData(chatId, 2);
+
+   console.log('@@@@ USERDATA ::::', userData);
+
+   await bot.sendMessage(chatId, 'getTransactionUserData');
+
+   // const isRequestExists = await RequestModel.findOne({ where: { requestId } });
+   //
+   // if (isRequestExists) {
+   //    await bot.sendMessage(chatId, 'Такая заявка уже существует.');
+   // } else {
+   //    await RequestModel.create({ where: { userId, chatId, requestId } });
+   // }
+
+   // Завершаем пошаговый Flow
+   // steps.setCurrentStep(chatId, 0);
 };
 
 steps.setCurrentStep = function(chatId, step) {
@@ -128,7 +174,7 @@ steps.setCurrentStep = function(chatId, step) {
    steps[chatId].currentStep = step;
 };
 
-steps.getCurrentStep = function(chatId) {
+steps.getCurrentStep = chatId => {
    return steps[chatId] ? steps[chatId].currentStep : 0;
 };
 
