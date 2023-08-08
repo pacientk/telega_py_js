@@ -22,6 +22,12 @@ module.exports = {
       }),
    },
 
+   againOptions: {
+      reply_markup: JSON.stringify({
+         inline_keyboard: [[{ text: 'А ну, еще раз!', callback_data: '/again' }]],
+      }),
+   },
+
    welcomeOptions: {
       reply_markup: JSON.stringify({
          inline_keyboard: [[{ text: 'Начать', callback_data: 'begin' }]],
@@ -49,5 +55,14 @@ module.exports = {
       reply_markup: JSON.stringify({
          inline_keyboard: [[{ text: 'Создать', callback_data: 'createWallet' }]],
       }),
+   },
+
+   STEP_NAME: {
+      START: 'START',
+      GET_ORDER_ID: 'GET_ORDER_ID',
+      GET_SUM: 'GET_SUM',
+      SET_COIN: 'SET_COIN',
+      CREATE_WALLET: 'CREATE_WALLET',
+      GET_USER_DATA: 'GET_USER_DATA',
    },
 };

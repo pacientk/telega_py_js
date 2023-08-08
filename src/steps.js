@@ -2,7 +2,7 @@ const UserModel = require('../src/Models/User');
 const RequestModel = require('../src/Models/Request');
 const constant = require('../src/constants');
 const sequelize = require('./db');
-const { welcomeOptions, coinsOptions } = require('./options');
+const { welcomeOptions, coinsOptions, STEP_NAME } = require('./options');
 
 let steps = {};
 let userData = {};
@@ -22,70 +22,77 @@ steps.start = async function(bot, msg) {
       console.error('@@@ Unable to connect to the database:', error);
    }
 
+   await UserModel.create({
+      userId,
+      chatId,
+      firstName,
+      lastName,
+   });
+
    bot.setMyCommands([
       { command: '/start', description: 'Start Command!!' },
       // { command: '/info', description: 'Info Command@@' },
       // { command: '/game', description: 'Play a game!' },
    ]);
 
+   await steps.setCurrentStep(chatId, STEP_NAME.GET_ORDER_ID);
+
    await bot.sendMessage(
       chatId,
-      'Здравствуйте!\n\nПриветственное сообщение.\n\nНачнем?\n',
+      'Здравствуйте!\n\nПриветственное сообщение.\n\nПриветственное сообщение.\n\nПриветственное сообщение.\n\nНачнем?\n',
       welcomeOptions
    );
 
-   const isUser = await UserModel.findOne({ where: { chatId } });
-
-   if (isUser) {
-      await steps.setCurrentStep(chatId, 1);
-   } else {
-      await bot.sendMessage(chatId, 'New user');
-      await UserModel.create({
-         userId,
-         chatId,
-         firstName,
-         lastName,
-      });
-      await steps.setCurrentStep(chatId, 1);
-   }
+   // const isUser = await UserModel.findOne({ where: { chatId } });
+   //
+   // if (isUser) {
+   //    await steps.setCurrentStep(chatId, 1);
+   //    userData = {};
+   // } else {
+   //    await bot.sendMessage(chatId, 'New session for user');
+   //    await UserModel.create({
+   //       userId,
+   //       chatId,
+   //       firstName,
+   //       lastName,
+   //    });
+   //    await steps.setCurrentStep(chatId, 1);
+   // }
 };
 
 steps.userGetRequstId_askSum_step_1 = async function(bot, msg) {
-   const userId = msg.from.id;
+   // const userId = msg.from.id;
    const chatId = msg.chat.id;
    const requestId = msg.text;
 
-   console.log('@@@@ USERDATA userGetRequstId_askSum_step_1 ::::', userData);
+   // console.log('@@@@ USERDATA userGetRequstId_askSum_step_1 ::::', userData);
 
    if (constant.REGEX_DIGITS_ONLY.test(requestId)) {
-      await steps.setCurrentStep(chatId, 2);
-
-      const dbUserId = await UserModel.findOne({ userId });
-      userData[dbUserId?.dataValues.id] = { requestId, userId, chatId };
+      // const dbUserId = await UserModel.findOne({ userId });
+      // userData[dbUserId?.dataValues.id] = { requestId, userId, chatId };
 
       await bot.sendMessage(chatId, `Номер заявки <b>#${requestId}</b> принят.`, {
          parse_mode: 'HTML',
       });
       await bot.sendMessage(chatId, 'Введите сумму.');
+      await steps.setCurrentStep(chatId, STEP_NAME.GET_SUM);
    } else {
       await bot.sendMessage(chatId, 'Ошибка! Номер заявки должен состоять только из цифр.');
    }
 };
 
 steps.userGetSum_askCoin_step_2 = async function(bot, msg) {
-   const userId = msg.from.id;
+   // const userId = msg.from.id;
    const chatId = msg.chat.id;
    const sum = msg.text;
 
-   const user = await UserModel.findOne({ where: { userId } });
-   userData[user.dataValues.id] = { ...userData[user.dataValues.id], sum };
+   // const user = await UserModel.findOne({ where: { userId } });
+   // userData[user.dataValues.id] = { ...userData[user.dataValues.id], sum };
 
-   console.log('@@@@ USERDATA userGetSum_askCoin_step_2 ::::', userData);
+   // console.log('@@@@ USERDATA userGetSum_askCoin_step_2 ::::', userData);
 
    if (constant.REGEX_DIGITS_ONLY.test(sum)) {
-      // userData[requestId] = { sum };
-
-      steps.setCurrentStep(chatId, 3);
+      steps.setCurrentStep(chatId, STEP_NAME.SET_COIN);
       await bot.sendMessage(chatId, `Сумма <b>${sum}</b> принята.`, { parse_mode: 'HTML' });
       await bot.sendMessage(chatId, 'Выберете монету для транзакции.\n\n', coinsOptions);
    } else {
@@ -97,6 +104,8 @@ steps.handleStep3 = async function(bot, msg) {
    const userId = msg.from.id;
    const chatId = msg.chat.id;
    const requestId = msg.text;
+
+   console.log('@@@@ msg.text >>>>>>>', msg.text);
 
    // const user = await UserModel.findOne({ where: { userId } });
    // userData[user.dataValues.id] = { ...userData[user.dataValues.id], sum };
@@ -125,7 +134,7 @@ steps.getWallet = async function(bot, msg) {
    const chatId = msg.chat.id;
    // const requestId = msg.text;
 
-   console.log('@@@@ USERDATA ::::', userData);
+   // console.log('@@@@ USERDATA ::::', userData);
 
    // const step2Data = steps.getStepData(chatId, 2);
 
@@ -172,6 +181,8 @@ steps.setCurrentStep = function(chatId, step) {
    }
 
    steps[chatId].currentStep = step;
+
+   console.log('@@@@ CURRENT STEP', steps[chatId].currentStep);
 };
 
 steps.getCurrentStep = chatId => {
